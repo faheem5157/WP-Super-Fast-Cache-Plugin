@@ -1,9 +1,11 @@
 <?php
 /*
-Plugin Name: My Super Fast Cache Plugin
+Plugin Name: WP Super Fast Cache Plugin
 Description: A simple page caching plugin that loads cache before WordPress initializes.
 Version: 1.0
-Author: Your Name
+Author: Croseoweb
+Author URI: https://croseoweb.com
+Copyright 2025-2030 WP Rocket
 */
 
 // Define paths
@@ -25,7 +27,7 @@ if (!defined('WP_CACHE')) {
     define('WP_CACHE', true);
 }
 
-\$cache_dir = __DIR__ . '/plugins/my-cache-plugin/cache/';
+\$cache_dir = __DIR__ . '/plugins/wp-super-fast-cache-plugin/cache/';
 \$cache_file = \$cache_dir . md5(\$_SERVER['REQUEST_URI']) . '.html';
 
 if (file_exists(\$cache_file) && filesize(\$cache_file) > 0) {
@@ -79,7 +81,23 @@ function my_cache_start() {
 }
 add_action('init', 'my_cache_start', 1);
 
+// ✅ Minify CSS in cached HTML
+function my_cache_minify_css($html) {
+    return preg_replace_callback(
+        '/<style\b[^>]*>(.*?)<\/style>/s',
+        function ($matches) {
+            return '<style>' . preg_replace(
+                ['/\s+/', '/\/\*.*?\*\//s', '/;\s+/'],
+                [' ', '', ';'],
+                $matches[1]
+            ) . '</style>';
+        },
+        $html
+    );
+}
+
 // ✅ Save cache after page loads
+// ✅ Save cache after page loads (with CSS minification)
 function my_cache_end() {
     if (is_user_logged_in() || is_admin() || $_SERVER['REQUEST_METHOD'] !== 'GET') {
         return;
@@ -89,8 +107,11 @@ function my_cache_end() {
     $output = ob_get_contents();
 
     if (!empty($output)) {
+        // Minify CSS before caching
+        $output = my_cache_minify_css($output);
+
         file_put_contents($cache_file, $output);
-        file_put_contents(MY_CACHE_LOG, "✅ Cache file saved: $cache_file" . PHP_EOL, FILE_APPEND);
+        file_put_contents(MY_CACHE_LOG, "✅ Cache file saved (CSS minified): $cache_file" . PHP_EOL, FILE_APPEND);
     } else {
         file_put_contents(MY_CACHE_LOG, "❌ ERROR: Output buffer was empty when saving cache!" . PHP_EOL, FILE_APPEND);
     }

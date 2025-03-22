@@ -1,6 +1,6 @@
 <?php
 // Super early WordPress cache loading
-define('MY_CACHE_DIR2', __DIR__ . '/plugins/my-cache-plugin/cache/');
+define('MY_CACHE_DIR2', __DIR__ . '/plugins/wp-super-fast-cache-plugin/cache/');
 
 $request_uri = preg_replace('/\?.*/', '', $_SERVER['REQUEST_URI']);
 

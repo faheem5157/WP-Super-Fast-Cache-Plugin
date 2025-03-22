@@ -4,7 +4,7 @@ if (!defined('WP_CACHE')) {
     define('WP_CACHE', true);
 }
 
-$cache_dir = __DIR__ . '/plugins/my-cache-plugin/cache/';
+$cache_dir = __DIR__ . '/plugins/wp-super-fast-cache-plugin/cache/';
 $cache_file = $cache_dir . md5($_SERVER['REQUEST_URI']) . '.html';
 
 if (file_exists($cache_file) && filesize($cache_file) > 0) {
