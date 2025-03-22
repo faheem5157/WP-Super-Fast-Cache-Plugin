@@ -1,0 +1,1 @@
+# WP-Super-Fast-Cache-Plugin
